@@ -1,0 +1,30 @@
+library(ggplot2)
+library(ggrepel)
+
+df <- read.csv("DESeq.csv",header=T)
+
+df$Diffexpressed <- "NO"
+
+
+df$Diffexpressed[df$log2FoldChange > 0.1 & df$pvalue < 0.05] <- "UP"
+df$Diffexpressed[df$log2FoldChange < -0.1 & df$pvalue < 0.05] <- "DOWN"
+
+head(df[order(df$padj) & df$Diffexpressed=='DOWN',])
+df
+
+ggplot(data=df, aes(x=log2FoldChange, y=-log10(pvalue), col=Diffexpressed)) +
+  geom_vline(xintercept=c(-1, 1), col="black", linetype="dashed") + 
+  geom_vline(xintercept=c(-0.5, 0.5), col="green", linetype="dashed") +
+  geom_hline(yintercept=-log10(0.00003), col="red", linetype="dashed") +
+  geom_hline(yintercept=-log10(0.05), col="black", linetype="dashed") +
+  geom_point(size=2) +
+  theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+        panel.background=element_blank(), axis.line=element_line(color="black"),
+        axis.title.y=element_text(size=10, color="black", face="bold"),
+        axis.title.x=element_text(size=10, color="black", face="bold"),
+        axis.text.x=element_text(size=8, color="black", face="bold"),
+        axis.text.y=element_text(size=8, color="black"),
+        legend.title=element_text(size=10, color="black", face="bold"),
+        legend.text=element_text(size=8, color="black", face="bold")) +
+  scale_color_manual(values=c("blue", "grey", "pink"),
+                     labels=c("Downregulated", "Not Significant", "Upregulated"))
