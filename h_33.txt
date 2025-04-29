@@ -1,0 +1,144 @@
+    su hduser
+
+    start-dfs.sh
+    start-yarn.sh
+
+    jps 
+
+    ls 
+
+    nano student.csv (ctrl  o ctrl x , put  csv data)
+    [student_id,subject,marks 
+    8018,BI,85 
+    8018,BDA,90 
+    8018,CI,78 
+    8018,DC,93 
+    8028,BI,97 
+    8028,BDA,99 
+    8028,CI,95 
+    8028,DC,90 
+    8032,BI,86 
+    8032,BDA,94 ]
+
+    cat student.csv
+    
+    hadoop fs -mkdir /grade 
+
+    hadoop fs -ls / 
+
+    hdfs dfs -rm -r /input
+
+    hdfs dfs -rm -r /output
+
+    hadoop fs -ls /
+
+    hadoop fs -put student.csv /grade/
+
+    hadoop fs -ls /
+
+    hadoop fs -ls /grade 
+
+    hadoop fs -cat /grade/student.csv 
+
+    nano map_s.py
+
+    nano red_s.py
+
+    chmod +x  map_s.py
+
+    chmod +x red_s.py
+
+    where is hadoop 
+
+    ls  /usr/local/hadoop/
+
+    ls  /usr/local/hadoop/share/ 
+
+    ls  /usr/local/hadoop/share/hadoop/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar -input /grade/student.csv -output /output_grade -mapper map_s.py -reducer red_s.py -file red_s.py
+
+    hadoop fs -ls /output_grade 
+
+    hadoop fs -cat /output_grade/part-00000
+
+    stop-dfs.sh
+    stop-yarn.sh
+
+
+new
+
+    su hduser
+
+    start-dfs.sh
+    start-yarn.sh
+
+    jps 
+
+    ls 
+
+    nano student.csv (ctrl  o ctrl x , put  csv data)
+    [student_id,subject,marks 
+    8018,BI,85 
+    8018,BDA,90 
+    8018,CI,78 
+    8018,DC,93 
+    8028,BI,97 
+    8028,BDA,99 
+    8028,CI,95 
+    8028,DC,90 
+    8032,BI,86 
+    8032,BDA,94 ]
+
+    cat student.csv
+
+    hadoop fs -mkdir /grade 
+
+    hadoop fs -ls / 
+
+    hdfs dfs -rm -r /input
+
+    hdfs dfs -rm -r /output
+
+    hadoop fs -ls /
+
+    hadoop fs -put student.csv /grade/
+
+    hadoop fs -ls /
+
+    hadoop fs -ls /grade 
+
+    hadoop fs -cat /grade/student.csv 
+
+    nano map_s.py
+
+    nano red_s.py
+
+    chmod +x  map_s.py
+
+    chmod +x red_s.py
+
+    where is hadoop 
+
+    ls  /usr/local/hadoop/
+
+    ls  /usr/local/hadoop/share/ 
+
+    ls  /usr/local/hadoop/share/hadoop/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar -input /grade/student.csv -output /output_grade -mapper map_s.py -reducer red_s.py -file red_s.py
+
+    hadoop fs -ls /output_grade 
+
+    hadoop fs -cat /output_grade/part-00000
+
+    stop-dfs.sh
+    stop-yarn.sh

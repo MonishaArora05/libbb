@@ -1,0 +1,21 @@
+# 1. Start Hadoop services
+start-dfs.sh
+start-yarn.sh
+
+# 2. Clean up previous input/output directories (if any)
+hdfs dfs -rm -r /input
+hdfs dfs -rm -r /output
+
+# 3. Create input directory and upload file
+hdfs dfs -mkdir -p /input
+hdfs dfs -put word_count_1.txt /input/
+
+# 4. Run MapReduce Word Count program
+hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.4.jar wordcount /input /output
+
+# 5. View the output
+hdfs dfs -cat /output/part-r-00000
+
+# 6. Stop Hadoop services
+stop-yarn.sh
+stop-dfs.sh

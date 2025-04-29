@@ -1,0 +1,51 @@
+show dbs;
+
+use test;
+
+db.createCollection("products");
+
+db.products.insertOne({name:'Laptop',category:'Electronics',price:40000});
+
+db.products.insertMany([{name:"Smartphone",category:'Electronics',price:50000},{name:'Cooler',category:'Electronics',price:60000}]);
+
+db.products.find();
+
+db.products.insertMany([
+  {name:'Tshirt',category:'Clothes',price:900},
+  {name:'top',category:'Clothes',price:700},
+  {name:'Blender',category:'Home Appliances',price:7500},
+  {name:'Mirror',category:'Home Appliances',price:900},
+  {name:'Tablet',category:'Tech Gadget',price:900},
+  {name:'Book',category:'Stationary',price:900},
+  {name:'Mangoes',category:'Food',price:900},
+  {name:'Saree',category:'Clothes',price:900},
+
+]);
+
+db.products.find();
+
+db.products.find({name:'Tshirt'});
+
+db.products.find({price:60000});
+
+db.products.updateOne({name:'Saree'},{$set:{price:6500}});
+
+db.products.find({name:'Saree'});
+
+db.products.updateMany({category:'Electronics'},{$set:{category:"Tech Gadget"}});
+
+db.products.find({category:"Tech Gadget"});
+
+db.products.find({$or: [
+  {category:'Clothes'},
+  {price:{$lt:1000}}
+  ]});
+  
+  
+db.products.deleteOne({name:'Laptop'});
+
+db.products.find();
+
+db.products.deleteMany({category:'Clothes'});
+
+db.products.find();
