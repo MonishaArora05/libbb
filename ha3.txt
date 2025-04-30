@@ -1,0 +1,875 @@
+    su hduser
+
+    start-dfs.sh
+    start-yarn.sh
+
+    jps 
+
+    ls 
+
+    nano student.csv (ctrl  o ctrl x , put  csv data)
+    [student_id,subject,marks 
+    8018,BI,85 
+    8018,BDA,90 
+    8018,CI,78 
+    8018,DC,93 
+    8028,BI,97 
+    8028,BDA,99 
+    8028,CI,95 
+    8028,DC,90 
+    8032,BI,86 
+    8032,BDA,94 ]
+
+    cat student.csv
+    
+    hadoop fs -mkdir /grade 
+
+    hadoop fs -ls / 
+
+    hdfs dfs -rm -r /input
+
+    hdfs dfs -rm -r /output
+
+    hadoop fs -ls /
+
+    hadoop fs -put student.csv /grade/
+
+    hadoop fs -ls /
+
+    hadoop fs -ls /grade 
+
+    hadoop fs -cat /grade/student.csv 
+
+    nano map_s.py
+
+    nano red_s.py
+
+    chmod +x  map_s.py
+
+    chmod +x red_s.py
+
+    where is hadoop 
+
+    ls  /usr/local/hadoop/
+
+    ls  /usr/local/hadoop/share/ 
+
+    ls  /usr/local/hadoop/share/hadoop/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar -input /grade/student.csv -output /output_grade -mapper map_s.py -reducer red_s.py -file red_s.py
+
+    hadoop fs -ls /output_grade 
+
+    hadoop fs -cat /output_grade/part-00000
+
+    stop-dfs.sh
+    stop-yarn.sh
+
+
+new
+
+    su hduser
+
+    start-dfs.sh
+    start-yarn.sh
+
+    jps 
+
+    ls 
+
+    nano student.csv (ctrl  o ctrl x , put  csv data)
+    [student_id,subject,marks 
+    8018,BI,85 
+    8018,BDA,90 
+    8018,CI,78 
+    8018,DC,93 
+    8028,BI,97 
+    8028,BDA,99 
+    8028,CI,95 
+    8028,DC,90 
+    8032,BI,86 
+    8032,BDA,94 ]
+
+    cat student.csv
+
+    hadoop fs -mkdir /grade 
+
+    hadoop fs -ls / 
+
+    hdfs dfs -rm -r /input
+
+    hdfs dfs -rm -r /output
+
+    hadoop fs -ls /
+
+    hadoop fs -put student.csv /grade/
+
+    hadoop fs -ls /
+
+    hadoop fs -ls /grade 
+
+    hadoop fs -cat /grade/student.csv 
+
+    nano map_s.py
+
+    nano red_s.py
+
+    chmod +x  map_s.py
+
+    chmod +x red_s.py
+
+    where is hadoop 
+
+    ls  /usr/local/hadoop/
+
+    ls  /usr/local/hadoop/share/ 
+
+    ls  /usr/local/hadoop/share/hadoop/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/ 
+
+    ls  /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar -input /grade/student.csv -output /output_grade -mapper map_s.py -reducer red_s.py -file red_s.py
+
+    hadoop fs -ls /output_grade 
+
+    hadoop fs -cat /output_grade/part-00000
+
+    stop-dfs.sh
+    stop-yarn.sh
+
+
+*********************************************************************
+
+student_id	subject	marks
+8018	BI	85
+8018	BDA	90
+8018	CI	78
+8018	DC	93
+8028	BI	97
+8028	BDA	99
+8028	CI	95
+8028	DC	90
+8032	BI	86
+8032	BDA	94
+8032	CI	85
+8032	DC	96
+8034	BI	60
+8034	BDA	55
+8034	CI	40
+8034	DC	40
+8095	BI	85
+8095	BDA	90
+8095	CI	96
+8095	DC	97
+
+
+*********************************************************************
+
+#!/usr/bin/env python3
+import sys
+
+# Input: student_id,subject,marks
+for line in sys.stdin:
+    line = line.strip()
+    if not line or line.startswith("student_id"):
+        continue
+    student_id, subject, marks = line.split(",")
+    print(f"{student_id}\t{marks}")
+
+
+*********************************************************************
+
+
+#!/usr/bin/env python3
+import sys
+
+def get_grade(avg):
+    avg = float(avg)
+    if avg >= 90:
+        return 'A'
+    elif avg >= 80:
+        return 'B'
+    elif avg >= 70:
+        return 'C'
+    elif avg >= 60:
+        return 'D'
+    else:
+        return 'F'
+
+current_id = None
+total = 0
+count = 0
+
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    student_id, marks = line.split("\t")
+    marks = float(marks)
+
+    if current_id == student_id:
+        total += marks
+        count += 1
+    else:
+        if current_id:
+            avg = total / count
+            print(f"{current_id}\t{avg:.2f}\t{get_grade(avg)}")
+        current_id = student_id
+        total = marks
+        count = 1
+
+# Output for the last student
+if current_id:
+    avg = total / count
+    print(f"{current_id}\t{avg:.2f}\t{get_grade(avg)}")
+
+
+*********************************************************************************
+
+
+yash_zagekar@Ubuntu:~$ su hduser
+Password: 
+
+hduser@Ubuntu:/home/yash_zagekar$ cd
+
+hduser@Ubuntu:~$ start-dfs.sh
+Starting namenodes on [localhost]
+Starting datanodes
+Starting secondary namenodes [Ubuntu]
+2025-04-17 16:38:54,137 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+hduser@Ubuntu:~$ start-yarn.sh
+Starting resourcemanager
+Starting nodemanagers
+
+hduser@Ubuntu:~$ jps
+5393 Jps
+4579 DataNode
+4820 SecondaryNameNode
+4375 NameNode
+
+hduser@Ubuntu:~$ ls
+Desktop              	mapper_word_count.py  	snap
+Documents            	Music                 	student_marks.csv
+Downloads            	Pictures              	Templates
+hadoop-3.3.4         	Public                	Videos
+hadoop-3.3.4.tar.gz  	reducer_student_grade.py  word_count.txt
+mapper_student_grade.py  reducer_word_count.py
+
+hduser@Ubuntu:~$ nano matrix.txt
+(
+matrix.txt file will open in nano input file
+Add your text in txt file - 
+For example - 
+A,0,0,1
+A,0,1,2
+A,1,0,3
+A,1,1,4
+B,0,0,5
+B,0,1,6
+B,1,0,7
+B,1,1,8
+
+Once the text is copy-pasted/ Added
+Press ctrl + o 
+Then, Enter key
+Lastly, Press ctrl + x 
+
+This will save the txt file and roll-back you to terminal
+)
+
+
+hduser@Ubuntu:~$ cat matrix.txt
+A,0,0,1
+A,0,1,2
+A,1,0,3
+A,1,1,4
+B,0,0,5
+B,0,1,6
+B,1,0,7
+B,1,1,8
+
+
+hduser@Ubuntu:~$ hadoop fs -ls /
+2025-04-17 16:47:01,709 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 4 items
+drwxr-xr-x   - hduser supergroup      	0 2025-04-15 07:02 /mapreduce_student_grade
+drwxr-xr-x   - hduser supergroup      	0 2025-04-14 17:34 /mapreduce_word_count
+drwxr-xr-x   - hduser supergroup      	0 2025-04-14 18:00 /output
+drwxr-xr-x   - hduser supergroup      	0 2025-04-15 07:32 /output_student_grade
+
+
+
+hduser@Ubuntu:~$ hadoop fs -mkdir /mapreduce_matrix_multiplication
+2025-04-17 16:47:30,213 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+hduser@Ubuntu:~$ hadoop fs -ls /
+2025-04-17 16:47:39,252 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 5 items
+drwxr-xr-x   - hduser supergroup      	0 2025-04-17 16:47 /mapreduce_matrix_multiplication
+drwxr-xr-x   - hduser supergroup      	0 2025-04-15 07:02 /mapreduce_student_grade
+drwxr-xr-x   - hduser supergroup      	0 2025-04-14 17:34 /mapreduce_word_count
+drwxr-xr-x   - hduser supergroup      	0 2025-04-14 18:00 /output
+drwxr-xr-x   - hduser supergroup      	0 2025-04-15 07:32 /output_student_grade
+
+hduser@Ubuntu:~$ hadoop fs -put matrix.txt /mapreduce_matrix_multiplication
+2025-04-17 16:48:25,553 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+
+hduser@Ubuntu:~$ hadoop fs -ls /mapreduce_matrix_multiplication
+2025-04-17 16:48:50,554 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 1 items
+-rw-r--r--   1 hduser supergroup     	64 2025-04-17 16:48 /mapreduce_matrix_multiplication/matrix.txt
+
+hduser@Ubuntu:~$ hadoop fs -cat /mapreduce_matrix_multiplication/matrix.txt
+2025-04-17 16:49:24,121 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+A,0,0,1
+A,0,1,2
+A,1,0,3
+A,1,1,4
+B,0,0,5
+B,0,1,6
+B,1,0,7
+B,1,1,8
+
+
+hduser@Ubuntu:~$ nano mapper_matrix.py
+
+After this command mapper_matrix.py will open in nano, 
+Following is the code - 
+
+#!/usr/bin/env python3
+import sys
+
+# Dimensions (hardcoded or passed through env/config)
+# A is m x n
+# B is n x p
+m = 2  # rows in A
+n = 2  # cols in A / rows in B
+p = 2  # cols in B
+
+for line in sys.stdin:
+	line = line.strip()
+	if not line:
+    	continue
+	matrix, i, j, value = line.split(",")
+	i = int(i)
+	j = int(j)
+	value = float(value)
+
+	if matrix == "A":
+    	for col in range(p):
+        	# Key: i,col ; Value: A,j,value
+        	print(f"{i},{col}\tA,{j},{value}")
+	elif matrix == "B":
+    	for row in range(m):
+        	# Key: row,j ; Value: B,i,value
+        	print(f"{row},{j}\tB,{i},{value}")
+
+
+
+
+
+In above code - 
+#!/usr/bin/env python3 is important to add. 
+
+Once the py code is complete
+Press ctrl + o 
+Then, Enter key
+Lastly, Press ctrl + x 
+
+This will save the py file and roll-back you to terminal
+
+hduser@Ubuntu:~$ nano reducer_matrix.py
+
+After this command reducer_matrix.py will open in nano, 
+Following is the code -  
+
+#!/usr/bin/env python3
+import sys
+from collections import defaultdict
+
+current_key = None
+a_vals = defaultdict(float)
+b_vals = defaultdict(float)
+
+def emit_result(key, a_vals, b_vals):
+	total = 0
+	for k in a_vals:
+    	if k in b_vals:
+        	total += a_vals[k] * b_vals[k]
+	print(f"{key}\t{total}")
+
+for line in sys.stdin:
+	line = line.strip()
+	if not line:
+    	continue
+
+	key, val = line.split("\t")
+	if key != current_key and current_key is not None:
+    	emit_result(current_key, a_vals, b_vals)
+    	a_vals.clear()
+    	b_vals.clear()
+
+	current_key = key
+	tag, k, v = val.split(",")
+	k = int(k)
+	v = float(v)
+
+	if tag == "A":
+    	a_vals[k] = v
+	elif tag == "B":
+    	b_vals[k] = v
+
+if current_key is not None:
+	emit_result(current_key, a_vals, b_vals)
+
+
+In above code - 
+#!/usr/bin/env python3 is important to add.
+
+Once the py code is complete
+Press ctrl + o 
+Then, Enter key
+Lastly, Press ctrl + x 
+
+This will save the py file and roll-back you to terminal
+
+hduser@Ubuntu:~$ chmod +x mapper_matrix.py
+hduser@Ubuntu:~$ chmod +x reducer_matrix.py
+
+
+
+
+
+
+
+
+Now open new terminal (keep the old terminal active)
+
+yash_zagekar@Ubuntu:~$ su hduser
+Password:
+hduser@Ubuntu:/home/yash_zagekar$ cd
+
+hduser@Ubuntu:~$ cd /usr/local/hadoop/share/hadoop/tools/lib
+
+hduser@Ubuntu:/usr/local/hadoop/share/hadoop/tools/lib$ ls
+aliyun-java-sdk-core-4.5.10.jar    	hadoop-gridmix-3.3.4.jar
+aliyun-java-sdk-kms-2.11.0.jar     	hadoop-kafka-3.3.4.jar
+aliyun-java-sdk-ram-3.1.0.jar      	hadoop-minicluster-3.3.4.jar
+aliyun-sdk-oss-3.13.0.jar          	hadoop-openstack-3.3.4.jar
+aws-java-sdk-bundle-1.12.262.jar   	hadoop-resourceestimator-3.3.4.jar
+azure-data-lake-store-sdk-2.3.9.jar	hadoop-rumen-3.3.4.jar
+azure-keyvault-core-1.0.0.jar      	hadoop-sls-3.3.4.jar
+azure-storage-7.0.1.jar            	hadoop-streaming-3.3.4.jar
+hadoop-aliyun-3.3.4.jar            	hamcrest-core-1.3.jar
+hadoop-archive-logs-3.3.4.jar      	ini4j-0.5.4.jar
+hadoop-archives-3.3.4.jar          	jdk.tools-1.8.jar
+hadoop-aws-3.3.4.jar               	jdom2-2.0.6.jar
+hadoop-azure-3.3.4.jar             	junit-4.13.2.jar
+hadoop-azure-datalake-3.3.4.jar    	kafka-clients-2.8.1.jar
+hadoop-client-3.3.4.jar            	lz4-java-1.7.1.jar
+hadoop-datajoin-3.3.4.jar          	ojalgo-43.0.jar
+hadoop-distcp-3.3.4.jar            	opentracing-api-0.33.0.jar
+hadoop-dynamometer-blockgen-3.3.4.jar  opentracing-noop-0.33.0.jar
+hadoop-dynamometer-infra-3.3.4.jar 	opentracing-util-0.33.0.jar
+hadoop-dynamometer-workload-3.3.4.jar  org.jacoco.agent-0.8.5-runtime.jar
+hadoop-extras-3.3.4.jar            	wildfly-openssl-1.0.7.Final.jar
+hadoop-fs2img-3.3.4.jar            	zstd-jni-1.4.9-1.jar
+
+hduser@Ubuntu:/usr/local/hadoop/share/hadoop/tools/lib$ pwd
+/usr/local/hadoop/share/hadoop/tools/lib
+
+
+Go back to your old terminal! 
+Paste the dic got from new terminal 
+/usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar
+(lib/hadoop-streaming-3.3.4.jar marked with bold above!)
+
+hduser@Ubuntu:~$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar -input /mapreduce_matrix_multiplication/matrix.txt -output /output_matrix -mapper /home/hduser/mapper_matrix.py -reducer /home/hduser/reducer_matrix.py 
+   
+2025-04-17 17:04:09,289 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2025-04-17 17:04:10,415 INFO impl.MetricsConfig: Loaded properties from hadoop-metrics2.properties
+2025-04-17 17:04:10,764 INFO impl.MetricsSystemImpl: Scheduled Metric snapshot period at 10 second(s).
+2025-04-17 17:04:10,765 INFO impl.MetricsSystemImpl: JobTracker metrics system started
+2025-04-17 17:04:10,814 WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2025-04-17 17:04:11,221 INFO mapred.FileInputFormat: Total input files to process : 1
+2025-04-17 17:04:11,384 INFO mapreduce.JobSubmitter: number of splits:1
+2025-04-17 17:04:11,676 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_local1421426574_0001
+2025-04-17 17:04:11,676 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2025-04-17 17:04:12,147 INFO mapreduce.Job: The url to track the job: http://localhost:8080/
+2025-04-17 17:04:12,159 INFO mapreduce.Job: Running job: job_local1421426574_0001
+2025-04-17 17:04:12,188 INFO mapred.LocalJobRunner: OutputCommitter set in config null
+2025-04-17 17:04:12,191 INFO mapred.LocalJobRunner: OutputCommitter is org.apache.hadoop.mapred.FileOutputCommitter
+2025-04-17 17:04:12,223 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 2
+2025-04-17 17:04:12,223 INFO output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+2025-04-17 17:04:12,427 INFO mapred.LocalJobRunner: Waiting for map tasks
+2025-04-17 17:04:12,437 INFO mapred.LocalJobRunner: Starting task: attempt_local1421426574_0001_m_000000_0
+2025-04-17 17:04:12,518 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 2
+2025-04-17 17:04:12,518 INFO output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+2025-04-17 17:04:12,597 INFO mapred.Task:  Using ResourceCalculatorProcessTree : [ ]
+2025-04-17 17:04:12,622 INFO mapred.MapTask: Processing split: hdfs://localhost:54310/mapreduce_matrix_multiplication/matrix.txt:0+64
+2025-04-17 17:04:12,677 INFO mapred.MapTask: numReduceTasks: 1
+2025-04-17 17:04:12,812 INFO mapred.MapTask: (EQUATOR) 0 kvi 26214396(104857584)
+2025-04-17 17:04:12,812 INFO mapred.MapTask: mapreduce.task.io.sort.mb: 100
+2025-04-17 17:04:12,812 INFO mapred.MapTask: soft limit at 83886080
+2025-04-17 17:04:12,812 INFO mapred.MapTask: bufstart = 0; bufvoid = 104857600
+2025-04-17 17:04:12,812 INFO mapred.MapTask: kvstart = 26214396; length = 6553600
+2025-04-17 17:04:12,816 INFO mapred.MapTask: Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2025-04-17 17:04:12,818 INFO streaming.PipeMapRed: PipeMapRed exec [/home/hduser/mapper_matrix.py]
+2025-04-17 17:04:12,826 INFO Configuration.deprecation: mapred.work.output.dir is deprecated. Instead, use mapreduce.task.output.dir
+2025-04-17 17:04:12,827 INFO Configuration.deprecation: mapred.local.dir is deprecated. Instead, use mapreduce.cluster.local.dir
+2025-04-17 17:04:12,828 INFO Configuration.deprecation: map.input.file is deprecated. Instead, use mapreduce.map.input.file
+2025-04-17 17:04:12,828 INFO Configuration.deprecation: map.input.length is deprecated. Instead, use mapreduce.map.input.length
+2025-04-17 17:04:12,828 INFO Configuration.deprecation: mapred.job.id is deprecated. Instead, use mapreduce.job.id
+2025-04-17 17:04:12,829 INFO Configuration.deprecation: mapred.task.partition is deprecated. Instead, use mapreduce.task.partition
+2025-04-17 17:04:12,832 INFO Configuration.deprecation: map.input.start is deprecated. Instead, use mapreduce.map.input.start
+2025-04-17 17:04:12,834 INFO Configuration.deprecation: mapred.task.is.map is deprecated. Instead, use mapreduce.task.ismap
+2025-04-17 17:04:12,835 INFO Configuration.deprecation: mapred.task.id is deprecated. Instead, use mapreduce.task.attempt.id
+2025-04-17 17:04:12,835 INFO Configuration.deprecation: mapred.tip.id is deprecated. Instead, use mapreduce.task.id
+2025-04-17 17:04:12,835 INFO Configuration.deprecation: mapred.skip.on is deprecated. Instead, use mapreduce.job.skiprecords
+2025-04-17 17:04:12,841 INFO Configuration.deprecation: user.name is deprecated. Instead, use mapreduce.job.user.name
+2025-04-17 17:04:13,050 INFO streaming.PipeMapRed: R/W/S=1/0/0 in:NA [rec/s] out:NA [rec/s]
+2025-04-17 17:04:13,058 INFO streaming.PipeMapRed: Records R/W=8/1
+2025-04-17 17:04:13,061 INFO streaming.PipeMapRed: MRErrorThread done
+2025-04-17 17:04:13,062 INFO streaming.PipeMapRed: mapRedFinished
+2025-04-17 17:04:13,072 INFO mapred.LocalJobRunner:
+2025-04-17 17:04:13,075 INFO mapred.MapTask: Starting flush of map output
+2025-04-17 17:04:13,076 INFO mapred.MapTask: Spilling map output
+2025-04-17 17:04:13,076 INFO mapred.MapTask: bufstart = 0; bufend = 192; bufvoid = 104857600
+2025-04-17 17:04:13,076 INFO mapred.MapTask: kvstart = 26214396(104857584); kvend = 26214336(104857344); length = 61/6553600
+2025-04-17 17:04:13,117 INFO mapred.MapTask: Finished spill 0
+2025-04-17 17:04:13,149 INFO mapred.Task: Task:attempt_local1421426574_0001_m_000000_0 is done. And is in the process of committing
+2025-04-17 17:04:13,158 INFO mapred.LocalJobRunner: Records R/W=8/1
+2025-04-17 17:04:13,160 INFO mapred.Task: Task 'attempt_local1421426574_0001_m_000000_0' done.
+2025-04-17 17:04:13,182 INFO mapred.Task: Final Counters for attempt_local1421426574_0001_m_000000_0: Counters: 23
+	File System Counters
+    	FILE: Number of bytes read=141410
+    	FILE: Number of bytes written=786978
+    	FILE: Number of read operations=0
+    	FILE: Number of large read operations=0
+    	FILE: Number of write operations=0
+    	HDFS: Number of bytes read=64
+    	HDFS: Number of bytes written=0
+    	HDFS: Number of read operations=5
+    	HDFS: Number of large read operations=0
+    	HDFS: Number of write operations=1
+    	HDFS: Number of bytes read erasure-coded=0
+	Map-Reduce Framework
+    	Map input records=8
+    	Map output records=16
+    	Map output bytes=192
+    	Map output materialized bytes=230
+    	Input split bytes=117
+    	Combine input records=0
+    	Spilled Records=16
+    	Failed Shuffles=0
+    	Merged Map outputs=0
+    	GC time elapsed (ms)=0
+    	Total committed heap usage (bytes)=168820736
+	File Input Format Counters
+    	Bytes Read=64
+2025-04-17 17:04:13,183 INFO mapred.LocalJobRunner: Finishing task: attempt_local1421426574_0001_m_000000_0
+2025-04-17 17:04:13,184 INFO mapred.LocalJobRunner: map task executor complete.
+2025-04-17 17:04:13,187 INFO mapred.LocalJobRunner: Waiting for reduce tasks
+2025-04-17 17:04:13,187 INFO mapred.LocalJobRunner: Starting task: attempt_local1421426574_0001_r_000000_0
+2025-04-17 17:04:13,196 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 2
+2025-04-17 17:04:13,196 INFO output.FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+2025-04-17 17:04:13,196 INFO mapred.Task:  Using ResourceCalculatorProcessTree : [ ]
+2025-04-17 17:04:13,202 INFO mapred.ReduceTask: Using ShuffleConsumerPlugin: org.apache.hadoop.mapreduce.task.reduce.Shuffle@310aa1b6
+2025-04-17 17:04:13,206 WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2025-04-17 17:04:13,216 INFO mapreduce.Job: Job job_local1421426574_0001 running in uber mode : false
+2025-04-17 17:04:13,218 INFO mapreduce.Job:  map 100% reduce 0%
+2025-04-17 17:04:13,247 INFO reduce.MergeManagerImpl: MergerManager: memoryLimit=546098368, maxSingleShuffleLimit=136524592, mergeThreshold=360424928, ioSortFactor=10, memToMemMergeOutputsThreshold=10
+2025-04-17 17:04:13,252 INFO reduce.EventFetcher: attempt_local1421426574_0001_r_000000_0 Thread started: EventFetcher for fetching Map Completion Events
+2025-04-17 17:04:13,310 INFO reduce.LocalFetcher: localfetcher#1 about to shuffle output of map attempt_local1421426574_0001_m_000000_0 decomp: 226 len: 230 to MEMORY
+2025-04-17 17:04:13,318 INFO reduce.InMemoryMapOutput: Read 226 bytes from map-output for attempt_local1421426574_0001_m_000000_0
+2025-04-17 17:04:13,327 INFO reduce.MergeManagerImpl: closeInMemoryFile -> map-output of size: 226, inMemoryMapOutputs.size() -> 1, commitMemory -> 0, usedMemory ->226
+2025-04-17 17:04:13,333 INFO reduce.EventFetcher: EventFetcher is interrupted.. Returning
+2025-04-17 17:04:13,338 INFO mapred.LocalJobRunner: 1 / 1 copied.
+2025-04-17 17:04:13,340 INFO reduce.MergeManagerImpl: finalMerge called with 1 in-memory map-outputs and 0 on-disk map-outputs
+2025-04-17 17:04:13,368 INFO mapred.Merger: Merging 1 sorted segments
+2025-04-17 17:04:13,368 INFO mapred.Merger: Down to the last merge-pass, with 1 segments left of total size: 220 bytes
+2025-04-17 17:04:13,379 INFO reduce.MergeManagerImpl: Merged 1 segments, 226 bytes to disk to satisfy reduce memory limit
+2025-04-17 17:04:13,381 INFO reduce.MergeManagerImpl: Merging 1 files, 230 bytes from disk
+2025-04-17 17:04:13,382 INFO reduce.MergeManagerImpl: Merging 0 segments, 0 bytes from memory into reduce
+2025-04-17 17:04:13,382 INFO mapred.Merger: Merging 1 sorted segments
+2025-04-17 17:04:13,382 INFO mapred.Merger: Down to the last merge-pass, with 1 segments left of total size: 220 bytes
+2025-04-17 17:04:13,383 INFO mapred.LocalJobRunner: 1 / 1 copied.
+2025-04-17 17:04:13,386 INFO streaming.PipeMapRed: PipeMapRed exec [/home/hduser/reducer_matrix.py]
+2025-04-17 17:04:13,397 INFO Configuration.deprecation: mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2025-04-17 17:04:13,399 INFO Configuration.deprecation: mapred.map.tasks is deprecated. Instead, use mapreduce.job.maps
+2025-04-17 17:04:13,505 INFO streaming.PipeMapRed: R/W/S=1/0/0 in:NA [rec/s] out:NA [rec/s]
+2025-04-17 17:04:13,508 INFO streaming.PipeMapRed: R/W/S=10/0/0 in:NA [rec/s] out:NA [rec/s]
+2025-04-17 17:04:13,513 INFO streaming.PipeMapRed: Records R/W=16/1
+2025-04-17 17:04:13,516 INFO streaming.PipeMapRed: MRErrorThread done
+2025-04-17 17:04:13,517 INFO streaming.PipeMapRed: mapRedFinished
+2025-04-17 17:04:13,629 INFO mapred.Task: Task:attempt_local1421426574_0001_r_000000_0 is done. And is in the process of committing
+2025-04-17 17:04:13,637 INFO mapred.LocalJobRunner: 1 / 1 copied.
+2025-04-17 17:04:13,637 INFO mapred.Task: Task attempt_local1421426574_0001_r_000000_0 is allowed to commit now
+2025-04-17 17:04:13,705 INFO output.FileOutputCommitter: Saved output of task 'attempt_local1421426574_0001_r_000000_0' to hdfs://localhost:54310/output_matrix
+2025-04-17 17:04:13,709 INFO mapred.LocalJobRunner: Records R/W=16/1 > reduce
+2025-04-17 17:04:13,709 INFO mapred.Task: Task 'attempt_local1421426574_0001_r_000000_0' done.
+2025-04-17 17:04:13,710 INFO mapred.Task: Final Counters for attempt_local1421426574_0001_r_000000_0: Counters: 30
+	File System Counters
+    	FILE: Number of bytes read=141902
+    	FILE: Number of bytes written=787208
+    	FILE: Number of read operations=0
+    	FILE: Number of large read operations=0
+    	FILE: Number of write operations=0
+    	HDFS: Number of bytes read=64
+    	HDFS: Number of bytes written=36
+    	HDFS: Number of read operations=10
+    	HDFS: Number of large read operations=0
+    	HDFS: Number of write operations=3
+    	HDFS: Number of bytes read erasure-coded=0
+	Map-Reduce Framework
+    	Combine input records=0
+    	Combine output records=0
+    	Reduce input groups=4
+    	Reduce shuffle bytes=230
+    	Reduce input records=16
+    	Reduce output records=4
+    	Spilled Records=16
+    	Shuffled Maps =1
+    	Failed Shuffles=0
+    	Merged Map outputs=1
+    	GC time elapsed (ms)=0
+    	Total committed heap usage (bytes)=168820736
+	Shuffle Errors
+    	BAD_ID=0
+    	CONNECTION=0
+    	IO_ERROR=0
+    	WRONG_LENGTH=0
+    	WRONG_MAP=0
+    	WRONG_REDUCE=0
+	File Output Format Counters
+    	Bytes Written=36
+2025-04-17 17:04:13,710 INFO mapred.LocalJobRunner: Finishing task: attempt_local1421426574_0001_r_000000_0
+2025-04-17 17:04:13,710 INFO mapred.LocalJobRunner: reduce task executor complete.
+2025-04-17 17:04:14,222 INFO mapreduce.Job:  map 100% reduce 100%
+2025-04-17 17:04:14,223 INFO mapreduce.Job: Job job_local1421426574_0001 completed successfully
+2025-04-17 17:04:14,253 INFO mapreduce.Job: Counters: 36
+	File System Counters
+    	FILE: Number of bytes read=283312
+    	FILE: Number of bytes written=1574186
+    	FILE: Number of read operations=0
+    	FILE: Number of large read operations=0
+    	FILE: Number of write operations=0
+    	HDFS: Number of bytes read=128
+    	HDFS: Number of bytes written=36
+    	HDFS: Number of read operations=15
+    	HDFS: Number of large read operations=0
+    	HDFS: Number of write operations=4
+    	HDFS: Number of bytes read erasure-coded=0
+	Map-Reduce Framework
+    	Map input records=8
+    	Map output records=16
+    	Map output bytes=192
+    	Map output materialized bytes=230
+    	Input split bytes=117
+    	Combine input records=0
+    	Combine output records=0
+    	Reduce input groups=4
+    	Reduce shuffle bytes=230
+    	Reduce input records=16
+    	Reduce output records=4
+    	Spilled Records=32
+    	Shuffled Maps =1
+    	Failed Shuffles=0
+    	Merged Map outputs=1
+    	GC time elapsed (ms)=0
+    	Total committed heap usage (bytes)=337641472
+	Shuffle Errors
+    	BAD_ID=0
+    	CONNECTION=0
+    	IO_ERROR=0
+    	WRONG_LENGTH=0
+    	WRONG_MAP=0
+    	WRONG_REDUCE=0
+	File Input Format Counters
+    	Bytes Read=64
+	File Output Format Counters
+    	Bytes Written=36
+2025-04-17 17:04:14,254 INFO streaming.StreamJob: Output directory: /output_matrix
+
+
+[
+
+If your command went wrong 
+Re-correct it. Before running that command make sure you delete the output created using following command - 
+
+hduser@Ubuntu:~$ hadoop fs -rm -r /output_matrix  
+
+2025-04-14 18:00:47,700 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Deleted /output
+
+And then give your command - 
+hduser@Ubuntu:~$ hadoop jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar -input /mapreduce_matrix_multiplication/matrix.txt -output /output_matrix -mapper /home/hduser/mapper_matrix.py -reducer /home/hduser/reducer_matrix.py 
+
+Or else you will get following error - 
+2025-04-14 18:00:19,901 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2025-04-14 18:00:20,774 INFO impl.MetricsConfig: Loaded properties from hadoop-metrics2.properties
+2025-04-14 18:00:21,121 INFO impl.MetricsSystemImpl: Scheduled Metric snapshot period at 10 second(s).
+2025-04-14 18:00:21,122 INFO impl.MetricsSystemImpl: JobTracker metrics system started
+2025-04-14 18:00:21,163 WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2025-04-14 18:00:21,374 ERROR streaming.StreamJob: Error Launching job : Output directory hdfs://localhost:54310/output already exists
+Streaming Command Failed!
+
+
+
+
+]
+
+hduser@Ubuntu:~$ hadoop fs -ls /output_matrix
+2025-04-17 17:11:31,287 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 2 items
+-rw-r--r--   1 hduser supergroup      	0 2025-04-17 17:04 /output_matrix/_SUCCESS
+-rw-r--r--   1 hduser supergroup     	36 2025-04-17 17:04 /output_matrix/part-00000
+
+hduser@Ubuntu:~$ hadoop fs -cat /output_matrix/part-00000
+2025-04-17 17:11:45,160 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+0,0	19.0
+0,1	22.0
+1,0	43.0
+1,1	50.0
+
+
+*************************************************************************************
+
+
+Assignment:- 3
+Finding Grades of Students
+1. Creation of text file
+Wordcount.txt file will open in nano
+For example -
+student_id,subject,marks
+8018,BI,85
+8018,BDA,90
+8018,CI,78
+8018,DC,93
+8028,BI,97
+8028,BDA,99
+8028,CI,95
+8028,DC,90
+8032,BI,86
+8032,BDA,94
+8032,CI,85
+8032,DC,96
+8034,BI,60
+8034,BDA,55
+8034,CI,40
+8034,DC,40
+Once data is added,
+• press ctrl+0
+• then, Enter key
+• and lastly ctrl+x
+to save the file and roll-back to terminal.
+
+2. Create Mapper code file
+After this command mapper_word_count.py will open in nano,
+Write the mapper code for word_count
+Code -
+#!/usr/bin/env python3
+import sys
+# Input: student_id,subject,marks
+for line in sys.stdin:
+line = line.strip()
+
+if not line or line.startswith("student_id"):
+continue
+student_id, subject, marks = line.split(",")
+print(f"{student_id}\t{marks}")
+#!/usr/bin/env python3 - Include this line of code.
+Once code is completed follow the step -
+• Press ctrl + o then,
+• Press Enter key,
+• Lastly ctrl + x
+This is save the mapper_student_grade.py and roll_back you back to terminal.
+
+3. Create Reducer code file
+After this command reducer_word_count.py will open in nano,
+Write the reducer code for word_count
+Code -
+#!/usr/bin/env python3
+import sys
+def get_grade(avg):
+avg = float(avg)
+if avg >= 90:
+return 'A'
+elif avg >= 80:
+return 'B'
+elif avg >= 70:
+return 'C'
+elif avg >= 60:
+return 'D'
+else:
+return 'F'
+current_id = None
+total = 0
+count = 0
+for line in sys.stdin:
+line = line.strip()
+if not line:
+continue
+student_id, marks = line.split("\t")
+marks = float(marks)
+if current_id == student_id:
+total += marks
+
+count += 1
+else:
+if current_id:
+avg = total / count
+print(f"{current_id}\t{avg:.2f}\t{get_grade(avg)}")
+current_id = student_id
+total = marks
+count = 1
+# Output for the last student
+if current_id:
+avg = total / count
+print(f"{current_id}\t{avg:.2f}\t{get_grade(avg)}")
+In above code -
+#!/usr/bin/env python3 is important to add.
+Once the py code is complete
+• Press ctrl + o
+• Then, Enter key
+• Lastly, Press ctrl + x
+This will save the py file and roll-back you to terminal
+
+If your command went wrong
+Re-correct it. Before running that command make sure you delete the
+output create using following command -
+hduser@Ubuntu:~$ hadoop fs -rm -r /output
+2025-04-14 18:00:47,700 WARN util.NativeCodeLoader: Unable to load
+native-hadoop library for your platform... using builtin-java classes
+where applicable
+Deleted /output
+And then give your command -
+hduser@Ubuntu:~$ hadoop jar/usr/local/hadoop/share/hadoop/tools/
+lib/hadoop-streaming-3.3.4.jar -input /mapreduce_word_count/
+word_count.txt -output /output -mapper/home/hduser/
+mapper_word_count.py -reducer/home/hduser/reducer_word_count.py
+Or else you will get following error -
+2025-04-14 18:00:19,901 WARN util.NativeCodeLoader: Unable to load
+native-hadoop library for your platform... using builtin-java classes
+where applicable
+2025-04-14 18:00:20,774 INFO impl.MetricsConfig: Loaded properties
+from hadoop-metrics2.properties
+
+2025-04-14 18:00:21,121 INFO impl.MetricsSystemImpl: Scheduled Metric
+snapshot period at 10 second(s).
+2025-04-14 18:00:21,122 INFO impl.MetricsSystemImpl: JobTracker
+metrics system started
+2025-04-14 18:00:21,163 WARN impl.MetricsSystemImpl: JobTracker
+metrics system already initialized!
+2025-04-14 18:00:21,374 ERROR streaming.StreamJob: Error Launching
+job : Output directory hdfs://localhost:54310/output already existsStreaming Command
+Failed!
+
+
