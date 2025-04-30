@@ -1,0 +1,592 @@
+show dbs;
+
+use test;
+
+db.createCollection("products");
+
+db.products.insertOne({name:'Laptop',category:'Electronics',price:40000});
+
+db.products.insertMany([{name:"Smartphone",category:'Electronics',price:50000},{name:'Cooler',category:'Electronics',price:60000}]);
+
+db.products.find();
+
+db.products.insertMany([
+  {name:'Tshirt',category:'Clothes',price:900},
+  {name:'top',category:'Clothes',price:700},
+  {name:'Blender',category:'Home Appliances',price:7500},
+  {name:'Mirror',category:'Home Appliances',price:900},
+  {name:'Tablet',category:'Tech Gadget',price:900},
+  {name:'Book',category:'Stationary',price:900},
+  {name:'Mangoes',category:'Food',price:900},
+  {name:'Saree',category:'Clothes',price:900},
+
+]);
+
+db.products.find();
+
+db.products.find({name:'Tshirt'});
+
+db.products.find({price:60000});
+
+db.products.updateOne({name:'Saree'},{$set:{price:6500}});
+
+db.products.find({name:'Saree'});
+
+db.products.updateMany({category:'Electronics'},{$set:{category:"Tech Gadget"}});
+
+db.products.find({category:"Tech Gadget"});
+
+db.products.find({$or: [
+  {category:'Clothes'},
+  {price:{$lt:1000}}
+  ]});
+  
+  
+db.products.deleteOne({name:'Laptop'});
+
+db.products.find();
+
+db.products.deleteMany({category:'Clothes'});
+
+db.products.find();
+
+
+
+************************************************************************
+
+
+test> show dbs;
+admin      40.00 KiB
+config     48.00 KiB
+local     104.00 KiB
+practice  304.00 KiB
+
+test> use test;
+already on db test
+
+test> db.createCollection("products");
+{ ok: 1 }
+
+test> db.products.insertOne({name: 'Laptop', category: 'Electronics', price: 40000}); 
+{
+  acknowledged: true,
+  insertedId: ObjectId('67fdeee3aa4d1653a24aa58c')
+}
+
+test> db.products.insertMany([
+...   {name: 'Smartphone', category: 'Electronics', price: 10000},
+...   {name: 'Books', category: 'Stationary', price: 500}
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('67fdeeedaa4d1653a24aa58d'),
+    '1': ObjectId('67fdeeedaa4d1653a24aa58e')
+  }
+}
+
+test> db.products.insertMany([
+...   {name: 'Headphones', category: 'Tech Gadgets', price: 2500},
+...   {name: 'Blender', category: 'Home Appliances', price: 3000},
+...   {name: 'Notebook', category: 'Stationary', price: 50},
+...   {name: 'T-shirt', category: 'Fashion', price: 800},
+...   {name: 'Gaming Mouse', category: 'Tech Gadgets', price: 1500},
+...   {name: 'Desk Lamp', category: 'Home Decor', price: 1200},
+...   {name: 'Backpack', category: 'Accessories', price: 1800},
+...   {name: 'Shoes', category: 'Fashion', price: 2500},
+...   {name: 'Water Bottle', category: 'Utilities', price: 300},
+...   {name: 'Tablet', category: 'Tech Gadgets', price: 20000}
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('67fdef18aa4d1653a24aa58f'),
+    '1': ObjectId('67fdef18aa4d1653a24aa590'),
+    '2': ObjectId('67fdef18aa4d1653a24aa591'),
+    '3': ObjectId('67fdef18aa4d1653a24aa592'),
+    '4': ObjectId('67fdef18aa4d1653a24aa593'),
+    '5': ObjectId('67fdef18aa4d1653a24aa594'),
+    '6': ObjectId('67fdef18aa4d1653a24aa595'),
+    '7': ObjectId('67fdef18aa4d1653a24aa596'),
+    '8': ObjectId('67fdef18aa4d1653a24aa597'),
+    '9': ObjectId('67fdef18aa4d1653a24aa598')
+  }
+}
+
+test> db.products.find();
+[
+  {
+    _id: ObjectId('67fdeee3aa4d1653a24aa58c'),
+    name: 'Laptop',
+    category: 'Electronics',
+    price: 40000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58d'),
+    name: 'Smartphone',
+    category: 'Electronics',
+    price: 10000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58e'),
+    name: 'Books',
+    category: 'Stationary',
+    price: 500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa58f'),
+    name: 'Headphones',
+    category: 'Tech Gadgets',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa590'),
+    name: 'Blender',
+    category: 'Home Appliances',
+    price: 3000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa591'),
+    name: 'Notebook',
+    category: 'Stationary',
+    price: 50
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa592'),
+    name: 'T-shirt',
+    category: 'Fashion',
+    price: 800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa593'),
+    name: 'Gaming Mouse',
+    category: 'Tech Gadgets',
+    price: 1500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa594'),
+    name: 'Desk Lamp',
+    category: 'Home Decor',
+    price: 1200
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa595'),
+    name: 'Backpack',
+    category: 'Accessories',
+    price: 1800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa596'),
+    name: 'Shoes',
+    category: 'Fashion',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa597'),
+    name: 'Water Bottle',
+    category: 'Utilities',
+    price: 300
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa598'),
+    name: 'Tablet',
+    category: 'Tech Gadgets',
+    price: 20000
+  }
+]
+
+test> db.products.find({name: 'Books'});
+[
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58e'),
+    name: 'Books',
+    category: 'Stationary',
+    price: 500
+  }
+]
+
+test> db.products.find({price: {$lt: 20000}});
+[
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58d'),
+    name: 'Smartphone',
+    category: 'Electronics',
+    price: 10000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58e'),
+    name: 'Books',
+    category: 'Stationary',
+    price: 500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa58f'),
+    name: 'Headphones',
+    category: 'Tech Gadgets',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa590'),
+    name: 'Blender',
+    category: 'Home Appliances',
+    price: 3000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa591'),
+    name: 'Notebook',
+    category: 'Stationary',
+    price: 50
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa592'),
+    name: 'T-shirt',
+    category: 'Fashion',
+    price: 800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa593'),
+    name: 'Gaming Mouse',
+    category: 'Tech Gadgets',
+    price: 1500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa594'),
+    name: 'Desk Lamp',
+    category: 'Home Decor',
+    price: 1200
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa595'),
+    name: 'Backpack',
+    category: 'Accessories',
+    price: 1800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa596'),
+    name: 'Shoes',
+    category: 'Fashion',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa597'),
+    name: 'Water Bottle',
+    category: 'Utilities',
+    price: 300
+  }
+]
+
+test> db.products.updateOne(
+...   {name: 'Laptop'},
+...   {$set: {price: 70000}}
+... ); 
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+test> db.products.find({name: 'Laptop'});
+[
+  {
+    _id: ObjectId('67fdeee3aa4d1653a24aa58c'),
+    name: 'Laptop',
+    category: 'Electronics',
+    price: 70000
+  }
+]
+
+test> db.products.updateMany(
+...   {category: 'Electronics'},
+...   {$set: {category: 'Tech Gadgets'}}
+... ); 
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 2,
+  modifiedCount: 2,
+  upsertedCount: 0
+}
+
+test> db.products.find({category: 'Tech Gadgets'});
+[
+  {
+    _id: ObjectId('67fdeee3aa4d1653a24aa58c'),
+    name: 'Laptop',
+    category: 'Tech Gadgets',
+    price: 70000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58d'),
+    name: 'Smartphone',
+    category: 'Tech Gadgets',
+    price: 10000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa58f'),
+    name: 'Headphones',
+    category: 'Tech Gadgets',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa593'),
+    name: 'Gaming Mouse',
+    category: 'Tech Gadgets',
+    price: 1500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa598'),
+    name: 'Tablet',
+    category: 'Tech Gadgets',
+    price: 20000
+  }
+]
+
+test> // Products in Tech Gadgets OR price < 10000
+... db.products.find({
+...   $or: [
+...     {category: 'Tech Gadgets'},
+...     {price: {$lt: 10000}}
+...   ]
+... });
+[
+  {
+    _id: ObjectId('67fdeee3aa4d1653a24aa58c'),
+    name: 'Laptop',
+    category: 'Tech Gadgets',
+    price: 70000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58d'),
+    name: 'Smartphone',
+    category: 'Tech Gadgets',
+    price: 10000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58e'),
+    name: 'Books',
+    category: 'Stationary',
+    price: 500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa58f'),
+    name: 'Headphones',
+    category: 'Tech Gadgets',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa590'),
+    name: 'Blender',
+    category: 'Home Appliances',
+    price: 3000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa591'),
+    name: 'Notebook',
+    category: 'Stationary',
+    price: 50
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa592'),
+    name: 'T-shirt',
+    category: 'Fashion',
+    price: 800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa593'),
+    name: 'Gaming Mouse',
+    category: 'Tech Gadgets',
+    price: 1500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa594'),
+    name: 'Desk Lamp',
+    category: 'Home Decor',
+    price: 1200
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa595'),
+    name: 'Backpack',
+    category: 'Accessories',
+    price: 1800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa596'),
+    name: 'Shoes',
+    category: 'Fashion',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa597'),
+    name: 'Water Bottle',
+    category: 'Utilities',
+    price: 300
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa598'),
+    name: 'Tablet',
+    category: 'Tech Gadgets',
+    price: 20000
+  }
+]
+
+test> // Products in category "Stationary" AND price < 1000
+... db.products.find({
+...   $and: [
+...     {category: 'Stationary'},
+...     {price: {$lt: 1000}}
+...   ]
+... });
+[
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58e'),
+    name: 'Books',
+    category: 'Stationary',
+    price: 500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa591'),
+    name: 'Notebook',
+    category: 'Stationary',
+    price: 50
+  }
+]
+
+test> // Not Stationary
+... db.products.find({
+...   category: {$not: {$eq: 'Stationary'}}
+... });
+[
+  {
+    _id: ObjectId('67fdeee3aa4d1653a24aa58c'),
+    name: 'Laptop',
+    category: 'Tech Gadgets',
+    price: 70000
+  },
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58d'),
+    name: 'Smartphone',
+    category: 'Tech Gadgets',
+    price: 10000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa58f'),
+    name: 'Headphones',
+    category: 'Tech Gadgets',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa590'),
+    name: 'Blender',
+    category: 'Home Appliances',
+    price: 3000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa592'),
+    name: 'T-shirt',
+    category: 'Fashion',
+    price: 800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa593'),
+    name: 'Gaming Mouse',
+    category: 'Tech Gadgets',
+    price: 1500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa594'),
+    name: 'Desk Lamp',
+    category: 'Home Decor',
+    price: 1200
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa595'),
+    name: 'Backpack',
+    category: 'Accessories',
+    price: 1800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa596'),
+    name: 'Shoes',
+    category: 'Fashion',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa597'),
+    name: 'Water Bottle',
+    category: 'Utilities',
+    price: 300
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa598'),
+    name: 'Tablet',
+    category: 'Tech Gadgets',
+    price: 20000
+  }
+]
+
+test> // Not Tech Gadgets and price < 50000
+... db.products.find({
+...   $nor: [
+...     {category: 'Tech Gadgets'},
+...     {price: {$gte: 50000}}
+...   ]
+... }); 
+[
+  {
+    _id: ObjectId('67fdeeedaa4d1653a24aa58e'),
+    name: 'Books',
+    category: 'Stationary',
+    price: 500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa590'),
+    name: 'Blender',
+    category: 'Home Appliances',
+    price: 3000
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa591'),
+    name: 'Notebook',
+    category: 'Stationary',
+    price: 50
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa592'),
+    name: 'T-shirt',
+    category: 'Fashion',
+    price: 800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa594'),
+    name: 'Desk Lamp',
+    category: 'Home Decor',
+    price: 1200
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa595'),
+    name: 'Backpack',
+    category: 'Accessories',
+    price: 1800
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa596'),
+    name: 'Shoes',
+    category: 'Fashion',
+    price: 2500
+  },
+  {
+    _id: ObjectId('67fdef18aa4d1653a24aa597'),
+    name: 'Water Bottle',
+    category: 'Utilities',
+    price: 300
+  }
+]
+
+test> db.products.deleteOne({name: 'Laptop'});
+{ acknowledged: true, deletedCount: 1 }
+
+test> db.products.deleteMany({ category: 'Fashion' });
+{ acknowledged: true, deletedCount: 2 }
+
